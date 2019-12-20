@@ -3,6 +3,15 @@
   <el-row :gutter="20">
     <el-col :span="4">
       <div class="grid-content bg-purple">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>名人列表</span>
+            <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
+          </div>
+          <div v-for="obj in persons" :key="obj.name" class="text item" >
+            <li data-name="obj.name" class="name_list"><a  :data-name="obj.name"  href="#"   @click="changeName($event)">{{obj.name}}</a></li>
+          </div>
+        </el-card>
       </div>
     </el-col>
     <el-col :span="20">
@@ -23,15 +32,38 @@ export default {
         return{
           key:'1b6f6a2d14d04c0a928616b4c9e9b242',
           keyword:'鲁迅',
-
+          rows: 5,
+          persons:[
+            {name:'孔子'},
+            {name:'杜甫'},
+            {name:'李白'},
+          ],
           MY_result:[],
           
         }
     },
+    methods:{
+      changeName:function(event){
+        this.keyword = event.target.getAttribute('data-name');
+        //  console.log(this.keyword)
+        console.log(event.target.getAttribute('data-name'))
+         this.$ajax({
+          type:'get',
+          url:'/MY?key='+this.key+'&keyword='+this.keyword+'&rows='+this.rows
+        }).then((Response)=>{
+           console.log('changeName:',Response)
+          // console.log('MY_list ajax')
+          this.MY_result = Response.data.result;
+          console.log('changeName:',this.MY_result);
+        })
+      }
+    },
+    watch:{
+    },
     created () {
         this.$ajax({
           type:'get',
-          url:'/MY?key='+this.key+'&keyword='+this.keyword
+          url:'/MY?key='+this.key+'&keyword='+this.keyword+'&rows='+this.rows
         }).then((Response)=>{
           console.log('MY:',Response)
           // console.log('MY_list ajax')
@@ -83,10 +115,35 @@ export default {
      display:table-cell;
    }
    .grid-content li p:first-child{
-     width: 40px;
+     width: auto;
    }
   .row-bg {
     padding: 10px 0;
     background-color: #a6df66;
+  }
+
+   .text {
+     height: 30px;
+    font-size: 16px;
+  }
+
+  .item {
+    margin-bottom: 6px;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
+  }
+
+  .box-card {
+  }
+
+  .name_list{
+    list-style: none;
   }
 </style>
